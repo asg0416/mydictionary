@@ -1,8 +1,12 @@
+// 단어 카드 상세 내용 확인 페이지
+// 여기서 수정 페이지 넘어가고, 삭제 가능
+
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { deleteDictFB } from "./redux/modules/dict";
 
+// 디자인 관련 내용
 import { ListStyle, Title, IndTitle } from "./WordList";
 import { Button } from "./MakeWords";
 import { HomeBtn } from "./Reposting";
@@ -17,8 +21,10 @@ const Detail = (props) => {
   console.log(dict_list);
   console.log(props);
 
+  // props의 match에서 인덱스 값 들고 오는 것 (ind 라고 쓴 이유는 App.js에서 url 파라미터 넘겨줄때 그렇게 써서 그런 것)
   let dict_index = parseInt(props.match.params.ind);
 
+  // 스토어에 저장된 리스트 값 해당 인덱스로 불러오기
   const name = dict_list[dict_index] && dict_list[dict_index].word_name;
   const desc = dict_list[dict_index] && dict_list[dict_index].word_desc;
   const ex = dict_list[dict_index] && dict_list[dict_index].word_ex;

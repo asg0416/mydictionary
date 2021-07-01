@@ -67,6 +67,8 @@ export const loadDictFB = () => {
 export const createDictFB = (newDictItems) => {
   return function (dispatch) {
     let dict_data = newDictItems;
+
+    // 파이어베이스 DB에 새로운 내용을 저장시키고 id값을 저장할 딕셔너리에 추가해서 저장해줌
     dict_db.add(newDictItems).then((docRef) => {
       dict_data = { ...dict_data, id: docRef.id };
       dispatch(createDict(dict_data));
@@ -75,6 +77,7 @@ export const createDictFB = (newDictItems) => {
   };
 };
 
+// 아래 updateDictFB 참고 같은 원리 임
 export const deleteDictFB = (dictIndex) => {
   return function (dispatch, getState) {
     const before_dict_data = getState().dict.list[dictIndex];
@@ -98,14 +101,19 @@ export const deleteDictFB = (dictIndex) => {
 
 export const updateDictFB = (reDictItems, dictIndex) => {
   return function (dispatch, getState) {
+    // 인덱스에 해당하는 변경되기 전 저장되어있던 리스트 값을 가져옴 
     const before_dict_data = getState().dict.list[dictIndex];
 
     let dict_data = reDictItems;
 
+    // 그 값(단어카드에 들어가는 딕셔너리 내용)에 id값이 없다는 건 
+    // 파이어베이스에 등록되지 않은 내용이므로 제외시킴 (id 내용은 createDictFB 참고)
     if (!before_dict_data.id) {
       return;
     }
 
+    // 해당 아이디를 파이어베이스 DB에서 찾아서 해당 문서를 새로 받은 내용으로 업데이트시키고
+    // FB업데이트 완료가 되고 나면 디스페치 액션크리에이터로 리덕스의 스토어도 연결시켜서 업데이트 시켜줌
     dict_db
       .doc(before_dict_data.id)
       .update(dict_data)
@@ -145,6 +153,8 @@ export default function reducer(state = initialState, action = {}) {
 
     case "dict/DELETE": {
       const dict_list = state.list.filter((l, idx) => {
+
+        // 삭제하고 싶은 인덱스가 아닐때만 해당 내용물을 리턴해서 사전 리스트를 구성하라는 것
         if (idx !== action.dictIndex) {
           return l;
         }
@@ -154,6 +164,8 @@ export default function reducer(state = initialState, action = {}) {
 
     case "dict/UPDATE": {
       const dict_list = state.list.map((l, ind) => {
+
+        // 수정하고 싶은 인덱스가 나오면 해당 인덱스의 내용을 수정할 내용으로 리턴하라는 것
         if (ind === action.dictIndex) {
           return action.reDictItems;
         } else {
